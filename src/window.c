@@ -2,7 +2,7 @@
 
 void CreateWindow(struct InitWindow *window){
 
-    window->window = SDL_CreateWindow("Hello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+    window->window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                 window->SCREEN_HEIGHT, window->SCREEN_WIDTH, 0);
     
     if (!window->window){
