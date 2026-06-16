@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 
     window.text_font = TTF_OpenFont("Fonts/BigBlueTerm437NerdFont-Regular.ttf", 24);
     if (window.text_font == NULL) {
-        fprintf(stderr, "Font error: %s\n", TTF_GetError());  // проверяй!
+        fprintf(stderr, "Font error: %s\n", TTF_GetError());
         return 1;
     }
 

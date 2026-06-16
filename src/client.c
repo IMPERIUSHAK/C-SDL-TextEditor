@@ -19,8 +19,6 @@ void handleEvents(SDL_Event *events, bool *isRunning){
 
 int getfilefd(char *str){
 
-    printf("%s\n", str);
-
     int fd = open(str, O_RDWR, 0);
 
     return fd;
@@ -32,7 +30,6 @@ bool get_text(int fd, char **str){
     int offset = 0;
     
     while ((n = read(fd, *str + offset, BUFFERSIZE - offset - 1)) > 0){
-        write(1, *str + offset, n);
         offset += n;
     }
     
@@ -46,12 +43,20 @@ bool get_text(int fd, char **str){
 
 SDL_Texture* create_texture(struct InitWindow *app){
     SDL_Color White = {255, 255, 255};
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(app->text_font, app->textbuffer, White); 
+    
+    SDL_Surface* surfaceMessage = TTF_RenderText_Blended_Wrapped(app->text_font, app->textbuffer, White, app->SCREEN_WIDTH - 40);
+    if (surfaceMessage == NULL){
+        fprintf(stderr, "Error while creating surface for Text doc");
+    } 
+    
     SDL_Texture* Message = SDL_CreateTextureFromSurface(app->renderer, surfaceMessage);
+    if (Message == NULL){
+        fprintf(stderr, "Error while creating Texture");
+    }
+    
     SDL_FreeSurface(surfaceMessage);
     return Message;
 }
-
 
 void run_client(struct InitWindow *app){
     bool isRunning = true;
@@ -70,7 +75,7 @@ void run_client(struct InitWindow *app){
         fprintf(stderr, "Error with opening file");
         exit(-1);
     }
-    
+
     SDL_Texture* Message = create_texture(app);
     SDL_Rect Message_rect;
     
