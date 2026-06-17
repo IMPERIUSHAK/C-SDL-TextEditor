@@ -53,7 +53,7 @@ SDL_Texture* create_texture(struct InitWindow *app){
     if (Message == NULL){
         fprintf(stderr, "Error while creating Texture");
     }
-    
+
     SDL_FreeSurface(surfaceMessage);
     return Message;
 }
@@ -68,9 +68,6 @@ void run_client(struct InitWindow *app){
         exit(-1);
     }
 
-    printf("%d\n", fd);
-
-    
     if (!get_text(fd, &app->textbuffer)){
         fprintf(stderr, "Error with opening file");
         exit(-1);
@@ -98,4 +95,19 @@ void run_client(struct InitWindow *app){
         SDL_RenderPresent(app->renderer);
     }
     
+    SDL_DestroyTexture(Message);
+    cleanMemory(app, fd);
+}
+
+void cleanMemory(struct InitWindow *app, int fd){
+    
+    close(fd);
+    TTF_CloseFont(app->text_font);
+    TTF_Quit();
+    SDL_DestroyWindow(app->window);
+    SDL_DestroyRenderer(app->renderer);
+        
+    free(app->filename);
+    free(app->msgs);
+    free(app->textbuffer);
 }

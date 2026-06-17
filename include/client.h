@@ -4,5 +4,7 @@
 #include "stdio.h"
 #include "unistd.h"
 
+
+void cleanMemory(struct InitWindow *app, int fd);
 int getfilefd(char *str);
 void run_client(struct InitWindow *window);
