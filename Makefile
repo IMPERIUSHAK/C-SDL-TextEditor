@@ -17,5 +17,3 @@ $(EXEC): $(OBJ)
 clean:
 	rm -f $(OBJ) $(EXEC)
  
-.PHONY: all clean
- 

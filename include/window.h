@@ -7,24 +7,21 @@
 
 
 
-struct MessageData
-{
-    char *text;
-    SDL_Texture *textr;
-};
-
 
 
 struct InitWindow
 {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Texture *textTexture;
+    SDL_Rect text_rect;
     int SCREEN_HEIGHT;
     int SCREEN_WIDTH;
     char *filename;
     char *textbuffer;
+    char *currtext;
     TTF_Font *text_font;
-    struct MessageData *msgs;
+    int scroll_offset;
 };
 
 void CreateWindow(struct InitWindow *window);
