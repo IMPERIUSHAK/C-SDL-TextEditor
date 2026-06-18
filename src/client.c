@@ -25,6 +25,62 @@ SDL_Texture* create_texture(struct InitWindow *app){
     return Message;
 }
 
+void save_file(struct InitWindow *app) {
+    int fd = open(app->filename, O_WRONLY | O_TRUNC);
+    if (fd == -1) {
+        perror("open");
+        return;
+    }
+
+    int len = strlen(app->textbuffer);
+    int written = write(fd, app->textbuffer, len);
+    if (written == -1) {
+        perror("write");
+    }
+
+    close(fd);
+}
+
+void handle_text_input(struct InitWindow *app, SDL_Event *event) {
+
+    strcat(app->textbuffer, event->text.text);
+    strcpy(app->currtext, app->textbuffer);
+
+    SDL_DestroyTexture(app->textTexture);
+    app->textTexture = create_texture(app);
+}
+
+void handle_keydown(struct InitWindow *app, SDL_Event *event) {
+
+    SDL_Keymod mod = SDL_GetModState();
+
+    if (event->key.keysym.scancode == SDL_SCANCODE_S &&
+        (mod & KMOD_CTRL)) {
+        save_file(app);
+    }
+
+    if (event->key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
+      
+        int len = strlen(app->textbuffer);
+      
+        if (len > 0) {
+            app->textbuffer[len - 1] = '\0';
+            strcpy(app->currtext, app->textbuffer);
+            SDL_DestroyTexture(app->textTexture);
+            app->textTexture = create_texture(app);
+        }
+    }
+    
+    if (event->key.keysym.scancode == SDL_SCANCODE_RETURN) {
+    
+        strcat(app->textbuffer, "\n");
+        strcpy(app->currtext, app->textbuffer);
+        SDL_DestroyTexture(app->textTexture);
+        app->textTexture = create_texture(app);
+    
+    }
+}
+
 void handle_mouse_wheel(struct InitWindow *app, SDL_Event *event)
 {
     int len = strlen(app->textbuffer);
@@ -86,9 +142,13 @@ void handleEvents(struct InitWindow *app, SDL_Event *events, bool *isRunning){
                 if (events->key.keysym.scancode == SDL_SCANCODE_ESCAPE){
                     *isRunning = false;
                 }
+                handle_keydown(app, events);
                 break;
             case SDL_MOUSEWHEEL:
                 handle_mouse_wheel(app, events);
+                break;
+            case SDL_TEXTINPUT:
+                handle_text_input(app, events);
                 break;
             default:
                 break;
@@ -133,7 +193,8 @@ void run_client(struct InitWindow *app){
         fprintf(stderr, "Error reading file\n");
         exit(-1);
     }
-
+    
+    SDL_StartTextInput();
     strcpy(app->currtext, app->textbuffer);
     app->textTexture = create_texture(app);
 
@@ -156,6 +217,7 @@ void run_client(struct InitWindow *app){
         SDL_RenderPresent(app->renderer);
     }
 
+    SDL_StopTextInput();
     cleanMemory(app, fd);
 }
 
